@@ -1281,6 +1281,13 @@ async function getModels(refresh = false) {
 			}
 		});
 
+    // WO: update the other dropdowns as well
+	if (refresh)
+        getStyles();
+        getSamplers();
+        getUpscalers();
+        getSchedulers();
+
 	// If first time running, ask if user wants to switch to an inpainting model
 	if (global.firstRun && !modelAutoComplete.value.includes("inpainting")) {
 		const inpainting = opt.find(({name}) => name.includes("inpainting"));
