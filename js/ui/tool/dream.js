@@ -10,9 +10,10 @@ let generationAreas = new Set();
  * @returns {() => void}
  */
 const _monitorProgress = (bb, oncheck = null) => {
-	const minDelay = 1000;
+	const minDelay = 500;
 
-	const apiURL = `${host}${config.api.path}progress?skip_current_image=true`;
+	// const apiURL = `${host}${config.api.path}progress?skip_current_image=true`;
+	const apiURL = `${host}${config.api.path}progress?skip_current_image=${oncheck ? 'false' : 'true'}`;
 
 	const expanded = {...bb};
 	expanded.x--;
@@ -202,7 +203,7 @@ const _dream = async (endpoint, request, bb = null) => {
 const _generate = async (endpoint, request, bb, options = {}) => {
 	var alertCount = 0;
 	defaultOpt(options, {
-		drawEvery: 0.2 / request.n_iter,
+		drawEvery: 2, // 0.2 / request.n_iter, WO: update preview every
 		keepUnmask: null,
 		keepUnmaskBlur: 0,
 	});
@@ -438,22 +439,24 @@ const _generate = async (endpoint, request, bb, options = {}) => {
 	let stopProgress = null;
 	try {
 		let stopDrawingStatus = false;
-		let lastProgress = 0;
-		let nextCP = options.drawEvery;
+//		let lastProgress = 0;
+//		let nextCP = options.drawEvery;
 		stopProgress = _monitorProgress(bb, (data) => {
 			if (stopDrawingStatus) return;
 
-			if (lastProgress < nextCP && data.progress >= nextCP) {
-				nextCP += options.drawEvery;
-				fetch(
-					`${host}${config.api.path}progress?skip_current_image=false`
-				).then(async (response) => {
-					if (stopDrawingStatus) return;
-					const imagedata = await response.json();
-					redraw(imagedata.current_image);
-				});
-			}
-			lastProgress = data.progress;
+            redraw(data.current_image);
+
+//			if (lastProgress < nextCP && data.progress >= nextCP) {
+//				nextCP += options.drawEvery;
+//				fetch(
+//					`${host}${config.api.path}progress?skip_current_image=false`
+//				).then(async (response) => {
+//					if (stopDrawingStatus) return;
+//					const imagedata = await response.json();
+//					redraw(imagedata.current_image);
+//				});
+//			}
+//			lastProgress = data.progress;
 		});
 
 		imageCollection.inputElement.appendChild(interruptButton);
