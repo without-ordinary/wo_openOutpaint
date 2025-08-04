@@ -116,6 +116,10 @@ var stableDiffusionData = {
 	hr_resize_y: 0,
 	hr_square_aspect: false,
 	styles: [],
+
+	// WO: we are not limited by A1111's API, we can actually add things
+	checkpoint: "",
+
 	// here's some more fields that might be useful
 
 	// ---txt2img specific:
@@ -646,14 +650,18 @@ modelAutoComplete.onchange.on(({value}) => {
 	 * but still need a fallback check like below
 	 */
 
-	if (value.toLowerCase().includes("inpainting"))
-		document.querySelector(
-			"#models-ac-select input.autocomplete-text"
-		).style.backgroundColor = "#cfc";
-	else
-		document.querySelector(
-			"#models-ac-select input.autocomplete-text"
-		).style.backgroundColor = "#fcc";
+    // WO: we don't really care what the checkpoint name is
+//	if (value.toLowerCase().includes("inpainting"))
+//		document.querySelector(
+//			"#models-ac-select input.autocomplete-text"
+//		).style.backgroundColor = "#cfc";
+//	else
+//		document.querySelector(
+//			"#models-ac-select input.autocomplete-text"
+//		).style.backgroundColor = "#fcc";
+
+	// WO: not limited A1111 API, we can actually send the checkpoint with the gen request
+	stableDiffusionData.checkpoint = value
 });
 
 let refinerAutoComplete = createAutoComplete(
@@ -1288,6 +1296,8 @@ async function getModels(refresh = false) {
         getUpscalers();
         getSchedulers();
 
+    // WO: we don't really care what the checkpoint name is
+    /*
 	// If first time running, ask if user wants to switch to an inpainting model
 	if (global.firstRun && !modelAutoComplete.value.includes("inpainting")) {
 		const inpainting = opt.find(({name}) => name.includes("inpainting"));
@@ -1309,6 +1319,7 @@ async function getModels(refresh = false) {
 			});
 		}
 	}
+	*/
 }
 
 async function getLoras() {

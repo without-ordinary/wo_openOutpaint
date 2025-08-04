@@ -27,6 +27,8 @@
  *
  * @property {number} inpainting_fill Stable Diffusion inpainting fill (img2img)
  * @property {boolean} inpaint_full_res Stable Diffusion full resolution (img2img)
+ *
+ * @property {string} checkpoint Stable Diffusion checkpoint name
  */
 
 /**
