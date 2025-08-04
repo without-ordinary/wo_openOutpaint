@@ -444,7 +444,7 @@ const _generate = async (endpoint, request, bb, options = {}) => {
 		stopProgress = _monitorProgress(bb, (data) => {
 			if (stopDrawingStatus) return;
 
-            redraw(data.current_image);
+            data.current_image && redraw(data.current_image);
 
 //			if (lastProgress < nextCP && data.progress >= nextCP) {
 //				nextCP += options.drawEvery;
