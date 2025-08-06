@@ -660,8 +660,8 @@ modelAutoComplete.onchange.on(({value}) => {
 //			"#models-ac-select input.autocomplete-text"
 //		).style.backgroundColor = "#fcc";
 
-	// WO: not limited A1111 API, we can actually send the checkpoint with the gen request
-	stableDiffusionData.checkpoint = value
+	stableDiffusionData.checkpoint = value;
+	localStorage.setItem("openoutpaint/checkpoint", value);;
 });
 
 let refinerAutoComplete = createAutoComplete(
@@ -670,6 +670,7 @@ let refinerAutoComplete = createAutoComplete(
 );
 refinerAutoComplete.onchange.on(({value}) => {
 	stableDiffusionData.refiner_checkpoint = value;
+	localStorage.setItem("openoutpaint/refiner_checkpoint", value);
 });
 
 let loraAutoComplete = createAutoComplete(
@@ -689,15 +690,29 @@ const samplerAutoComplete = createAutoComplete(
 	document.getElementById("sampler-ac-select")
 );
 
+samplerAutoComplete.onchange.on(({value}) => {
+	stableDiffusionData.sampler_index = value;
+	localStorage.setItem("openoutpaint/sampler", value);
+});
+
 const schedulerAutoComplete = createAutoComplete(
 	"Scheduler",
 	document.getElementById("scheduler-ac-select")
 );
 
+schedulerAutoComplete.onchange.on(({value}) => {
+	stableDiffusionData.scheduler = value;
+	localStorage.setItem("openoutpaint/scheduler", value);
+});
+
 const upscalerAutoComplete = createAutoComplete(
 	"Upscaler",
 	document.getElementById("upscaler-ac-select")
 );
+
+upscalerAutoComplete.onchange.on(({value}) => {
+	localStorage.setItem("openoutpaint/upscaler", upscaler);
+});
 
 const hrFixUpscalerAutoComplete = createAutoComplete(
 	"HRfix Upscaler",
@@ -1211,7 +1226,7 @@ async function getUpscalers() {
 			: localStorage.getItem("openoutpaint/hr_upscaler");
 }
 
-async function getModels(refresh = false) {
+async function getModels() {
 	const url = document.getElementById("host").value + "/sdapi/v1/sd-models";
 	let opt = null;
 
@@ -1230,96 +1245,32 @@ async function getModels(refresh = false) {
 
 		refinerAutoComplete.options = modelAutoComplete.options = opt;
 
-		try {
-			const optResponse = await fetch(
-				document.getElementById("host").value + "/sdapi/v1/options"
-			);
-			const optData = await optResponse.json();
-
-			var model = optData.sd_model_checkpoint;
-			// 20230722 - sigh so this key is now removed https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/66c5f1bb1556a2d86d9f11aeb92f83d4a09832cc
-			// no idea why but time to deal with it
-			if (model === undefined) {
-				const modelHash = optData.sd_checkpoint_hash;
-				const hashMap = data.map((option) => ({
-					hash: option.sha256,
-					title: option.title,
-				}));
-				model = hashMap.find((option) => option.hash === modelHash).title;
-			}
-			console.log("Current model: " + model);
-			if (modelAutoComplete.value !== model) modelAutoComplete.value = model;
-		} catch (e) {
-			console.warn("[index] Failed to fetch current model:");
-			console.warn(e);
+		// Initial checkpoint
+		if (localStorage.getItem("openoutpaint/checkpoint") != null) {
+			modelAutoComplete.value = localStorage.getItem("openoutpaint/checkpoint");
+			var model = data.find((option) => option.title === modelAutoComplete.value).title;
+            if (modelAutoComplete.value !== model) modelAutoComplete.value = data[0].title;
+		} else {
+			modelAutoComplete.value = data[0].title;
+			localStorage.setItem("openoutpaint/checkpoint", modelAutoComplete.value);
 		}
+		stableDiffusionData.checkpoint = modelAutoComplete.value;
+
+		// Initial refiner checkpoint
+		if (localStorage.getItem("openoutpaint/refiner_checkpoint") != null) {
+			refinerAutoComplete.value = localStorage.getItem("openoutpaint/refiner_checkpoint");
+			var model = data.find((option) => option.title === refinerAutoComplete.value).title;
+            if (refinerAutoComplete.value !== model) refinerAutoComplete.value = data[0].title;
+		} else {
+			refinerAutoComplete.value = data[0].title;
+			localStorage.setItem("openoutpaint/refiner_checkpoint", refinerAutoComplete.value);
+		}
+		stableDiffusionData.refiner_checkpoint = refinerAutoComplete.value;
+
 	} catch (e) {
 		console.warn("[index] Failed to fetch models:");
 		console.warn(e);
 	}
-
-	if (!refresh)
-		modelAutoComplete.onchange.on(async ({value}) => {
-			console.log(`[index] Changing model to [${value}]`);
-			const payload = {
-				sd_model_checkpoint: value,
-			};
-			const url = document.getElementById("host").value + "/sdapi/v1/options/";
-			try {
-				await fetch(url, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify(payload),
-				});
-
-				notifications.notify(`Model changed to [${value}]`, {type: "success"});
-			} catch (e) {
-				console.warn("[index] Error changing model");
-				console.warn(e);
-
-				notifications.notify(
-					"Error changing model, please check console for additional information",
-					{
-						type: NotificationType.ERROR,
-						timeout: config.notificationTimeout * 2,
-					}
-				);
-			}
-		});
-
-    // WO: update the other dropdowns as well
-	if (refresh)
-        getStyles();
-        getSamplers();
-        getUpscalers();
-        getSchedulers();
-
-    // WO: we don't really care what the checkpoint name is
-    /*
-	// If first time running, ask if user wants to switch to an inpainting model
-	if (global.firstRun && !modelAutoComplete.value.includes("inpainting")) {
-		const inpainting = opt.find(({name}) => name.includes("inpainting"));
-
-		let message =
-			"It seems this is your first time using openOutpaint. It is highly recommended that you switch to an inpainting model. \
-			These are highlighted as green in the model selector.";
-
-		if (inpainting) {
-			message += `<br><br>We have found the inpainting model<br><br> - ${inpainting.name}<br><br>available in the webui. Do you want to switch to it?`;
-			if (await notifications.dialog("Automatic Model Switch", message)) {
-				modelAutoComplete.value = inpainting.value;
-			}
-		} else {
-			message += `<br><br>No inpainting model seems to be available in the webui. It is recommended that you download an inpainting model, or outpainting results may not be optimal.`;
-			notifications.notify(message, {
-				type: NotificationType.WARN,
-				timeout: null,
-			});
-		}
-	}
-	*/
 }
 
 async function getLoras() {
@@ -1441,11 +1392,6 @@ async function getSamplers() {
 		const response = await fetch(url);
 		const data = await response.json();
 
-		samplerAutoComplete.onchange.on(({value}) => {
-			stableDiffusionData.sampler_index = value;
-			localStorage.setItem("openoutpaint/sampler", value);
-		});
-
 		samplerAutoComplete.options = data.map((sampler) => ({
 			name: sampler.name,
 			value: sampler.name,
@@ -1471,11 +1417,6 @@ async function getSchedulers() {
 	try {
 		const response = await fetch(url);
 		const data = await response.json();
-
-		schedulerAutoComplete.onchange.on(({value}) => {
-			stableDiffusionData.scheduler = value;
-			localStorage.setItem("openoutpaint/scheduler", value);
-		});
 
 		schedulerAutoComplete.options = data.map((scheduler) => ({
 			name: scheduler.label,
@@ -1825,4 +1766,14 @@ function storeUserscriptVal(evt, type) {
 
 		localStorage.setItem("openoutpaint/script_" + type + "_input", val);
 	}
+}
+
+async function refreshOptions() {
+    // WO: update all dropdowns from ComfyUI interface
+    getModels();
+    getStyles();
+    getSamplers();
+    getUpscalers();
+    getSchedulers();
+    getLoras();
 }

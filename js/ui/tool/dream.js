@@ -415,7 +415,7 @@ const _generate = async (endpoint, request, bb, options = {}) => {
 	};
 
 	const sendInterrupt = () => {
-		fetch(`${host}${config.api.path}interrupt`, {method: "POST"});
+		fetch(`${host}${config.api.path}interrupt`, {method: "GET"});
 	};
 
 	// Add Interrupt Button
