@@ -650,7 +650,7 @@ modelAutoComplete.onchange.on(({value}) => {
 	 * but still need a fallback check like below
 	 */
 
-    // WO: we don't really care what the checkpoint name is
+	// WO: we don't really care what the checkpoint name is
 //	if (value.toLowerCase().includes("inpainting"))
 //		document.querySelector(
 //			"#models-ac-select input.autocomplete-text"
@@ -1249,7 +1249,7 @@ async function getModels() {
 		if (localStorage.getItem("openoutpaint/checkpoint") != null) {
 			modelAutoComplete.value = localStorage.getItem("openoutpaint/checkpoint");
 			var model = data.find((option) => option.title === modelAutoComplete.value).title;
-            if (modelAutoComplete.value !== model) modelAutoComplete.value = data[0].title;
+			if (modelAutoComplete.value !== model) modelAutoComplete.value = data[0].title;
 		} else {
 			modelAutoComplete.value = data[0].title;
 			localStorage.setItem("openoutpaint/checkpoint", modelAutoComplete.value);
@@ -1260,7 +1260,7 @@ async function getModels() {
 		if (localStorage.getItem("openoutpaint/refiner_checkpoint") != null) {
 			refinerAutoComplete.value = localStorage.getItem("openoutpaint/refiner_checkpoint");
 			var model = data.find((option) => option.title === refinerAutoComplete.value).title;
-            if (refinerAutoComplete.value !== model) refinerAutoComplete.value = data[0].title;
+			if (refinerAutoComplete.value !== model) refinerAutoComplete.value = data[0].title;
 		} else {
 			refinerAutoComplete.value = data[0].title;
 			localStorage.setItem("openoutpaint/refiner_checkpoint", refinerAutoComplete.value);
@@ -1769,11 +1769,11 @@ function storeUserscriptVal(evt, type) {
 }
 
 async function refreshOptions() {
-    // WO: update all dropdowns from ComfyUI interface
-    getModels();
-    getStyles();
-    getSamplers();
-    getUpscalers();
-    getSchedulers();
-    getLoras();
+	// WO: update all dropdowns from ComfyUI interface
+	getModels();
+	getStyles();
+	getSamplers();
+	getUpscalers();
+	getSchedulers();
+	getLoras();
 }
