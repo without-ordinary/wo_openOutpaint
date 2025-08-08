@@ -1,3 +1,19 @@
+# Fork of openOutpaint for ComfyUI
+
+For use with my [ComfyUI Interface](https://github.com/without-ordinary/wo_openoutpaint_comfyui_interface). More infor there.
+
+Initially the interface was designed to work with the stock openOutpaint and emulate the A1111 API, but I abandoned that challenge as there are too many limitations within the context of ComfyUI. Without having to emulate how A1111 works now, I am free to make changes in a fork to better fit the open-ended customizable of ComfyUI. UI changes are likely to happen next, at least within my capability with js.
+
+### Possible Todo's:
+* Simply the API: A1111 splits information getting requests across multiple end points.
+* Change API path as to not match A1111's since it won't be compatible.
+* Use a websocket instead. Get feedback from the workflow without having to request it by either manually or timer.
+* Store ComfyUI metadata in openOutpainter project data.
+* Store prompt and settings to project instead of only separate history file (not sure why that is).
+* Host openOutpaint from interface node.
+
+### Everything below here pertains to original project and needs to be updated at some point
+
 # hello there 🐠
 
 [openOutpaint creating some undersea... well, stuff](https://user-images.githubusercontent.com/1649724/205455599-7817812e-5b50-4c96-807e-268b40fa2fd7.mp4)
