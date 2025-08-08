@@ -36,7 +36,7 @@ const extensions = {
 		];
 		// check http://127.0.0.1:7860/sdapi/v1/scripts for extensions
 		// if any of the allowed extensions are found, add them to the list
-		var url = document.getElementById("host").value + "/sdapi/v1/scripts";
+		var url = `${host}${config.api.path}scripts`;
 		try {
 			const response = await fetch(url);
 			const data = await response.json();
@@ -94,7 +94,7 @@ const extensions = {
 		controlNetModuleAutoComplete,
 		controlNetReferenceModuleAutoComplete
 	) {
-		var url = document.getElementById("host").value + "/controlnet/version";
+		var url = `${host}${config.api.path}controlnet/version`;
 
 		if (
 			this.enabledExtensions.filter((e) => e.includes("controlnet")).length > 0
@@ -115,7 +115,7 @@ const extensions = {
 						controlNetReferenceModuleAutoComplete
 					);
 				}
-				url = document.getElementById("host").value + "/controlnet/settings";
+				url = `${host}${config.api.path}controlnet/settings`;
 				try {
 					const response2 = await fetch(url);
 					const data2 = await response2.json();
@@ -137,7 +137,7 @@ const extensions = {
 	},
 	async getModels(controlNetModelAutoComplete) {
 		// only worry about inpaint models for now
-		var url = document.getElementById("host").value + "/controlnet/model_list";
+		var url = `${host}${config.api.path}controlnet/model_list`;
 
 		try {
 			const response = await fetch(url);
@@ -164,7 +164,7 @@ const extensions = {
 		controlNetReferenceModuleAutoComplete
 	) {
 		const allowedModules = ["reference", "inpaint"];
-		var url = document.getElementById("host").value + "/controlnet/module_list";
+		var url = `${host}${config.api.path}controlnet/module_list`;
 
 		try {
 			const response = await fetch(url);

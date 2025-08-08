@@ -145,7 +145,7 @@ var stableDiffusionData = {
 
 // stuff things use
 var host = "";
-var url = "/sdapi/v1/";
+var url = `${config.api.path}`;
 const basePixelCount = 64; //64 px - ALWAYS 64 PX
 var focused = true;
 let defaultScripts = {};
@@ -375,12 +375,12 @@ async function testHostConnection() {
 				"Check is currently in progress, please try again"
 			);
 		checkInProgress = true;
-		var url = document.getElementById("host").value + "/startup-events";
+		var url = `${host}${config.api.path}startup-events`;
 		// Attempt normal request
 		try {
 			if (simpleProgressStatus) {
 				const response = await fetch(
-					document.getElementById("host").value + "/sdapi/v1/progress" // seems to be the "lightest" endpoint?
+					`${host}${config.api.path}progress` // seems to be the "lightest" endpoint?
 				);
 				switch (response.status) {
 					case 200: {
@@ -398,7 +398,7 @@ async function testHostConnection() {
 			} else {
 				// Check if API is available
 				const response = await fetch(
-					document.getElementById("host").value + "/sdapi/v1/options"
+					`${host}${config.api.path}options`
 				);
 				const optionsdata = await response.json();
 				if (optionsdata["use_scale_latent_for_hires_fix"]) {
@@ -1166,7 +1166,7 @@ async function saveWorkspaceToFile() {
 }
 
 async function getUpscalers() {
-	var url = document.getElementById("host").value + "/sdapi/v1/upscalers";
+	var url = `${host}${config.api.path}upscalers`;
 	let upscalers = [];
 
 	try {
@@ -1227,7 +1227,7 @@ async function getUpscalers() {
 }
 
 async function getModels() {
-	const url = document.getElementById("host").value + "/sdapi/v1/sd-models";
+	const url = `${host}${config.api.path}sd-models`;
 	let opt = null;
 
 	try {
@@ -1274,7 +1274,7 @@ async function getModels() {
 }
 
 async function getLoras() {
-	var url = document.getElementById("host").value + "/sdapi/v1/loras";
+	var url = `${host}${config.api.path}loras`;
 	let opt = null;
 
 	try {
@@ -1292,7 +1292,7 @@ async function getLoras() {
 }
 
 async function getConfig() {
-	var url = document.getElementById("host").value + "/sdapi/v1/options";
+	var url = `${host}${config.api.path}options`;
 
 	let message =
 		"The following options for the AUTOMATIC1111's webui are not recommended to use with this software:";
@@ -1386,7 +1386,7 @@ function changeScheduler() {
 }
 
 async function getSamplers() {
-	var url = document.getElementById("host").value + "/sdapi/v1/samplers";
+	var url = `${host}${config.api.path}samplers`;
 
 	try {
 		const response = await fetch(url);
@@ -1412,7 +1412,7 @@ async function getSamplers() {
 }
 
 async function getSchedulers() {
-	var url = document.getElementById("host").value + "/sdapi/v1/schedulers";
+	var url = `${host}${config.api.path}schedulers`;
 
 	try {
 		const response = await fetch(url);
@@ -1475,7 +1475,7 @@ async function upscaleAndDownload(
 
 	if (imgdata != null) {
 		var url =
-			document.getElementById("host").value + "/sdapi/v1/extra-single-image/";
+			`${host}${config.api.path}extra-single-image/`;
 
 		var data = {
 			"resize-mode": 0, // 0 = just resize, 1 = crop and resize, 2 = resize and fill i assume based on theimg2img tabs options

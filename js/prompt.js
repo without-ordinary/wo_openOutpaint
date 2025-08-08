@@ -11,7 +11,7 @@ const styleSelectElement = createAutoComplete(
 
 // Function to get styles from AUTOMATIC1111 webui
 async function getStyles() {
-	var url = document.getElementById("host").value + "/sdapi/v1/prompt-styles";
+	var url = `${host}${config.api.path}prompt-styles`;
 	try {
 		const response = await fetch(url);
 		/** @type {{name: string, prompt: string, negative_prompt: string}[]} */
