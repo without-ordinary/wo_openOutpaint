@@ -661,7 +661,7 @@ modelAutoComplete.onchange.on(({value}) => {
 //		).style.backgroundColor = "#fcc";
 
 	stableDiffusionData.checkpoint = value;
-	localStorage.setItem("openoutpaint/checkpoint", value);;
+	localStorage.setItem("openoutpaint/checkpoint", value);
 });
 
 let refinerAutoComplete = createAutoComplete(
@@ -1235,10 +1235,10 @@ async function getModels() {
 		const data = await response.json();
 
 		opt = data.map((option) => ({
-			name: option.title,
-			value: option.title,
+			name: option,
+			value: option,
 			optionelcb: (el) => {
-				if (option.title.toLowerCase().includes("inpainting"))
+				if (option.toLowerCase().includes("inpainting"))
 					el.classList.add("inpainting");
 			},
 		}));
@@ -1246,23 +1246,21 @@ async function getModels() {
 		refinerAutoComplete.options = modelAutoComplete.options = opt;
 
 		// Initial checkpoint
-		if (localStorage.getItem("openoutpaint/checkpoint") != null) {
-			modelAutoComplete.value = localStorage.getItem("openoutpaint/checkpoint");
-			var model = data.find((option) => option.title === modelAutoComplete.value).title;
-			if (modelAutoComplete.value !== model) modelAutoComplete.value = data[0].title;
+		let model = localStorage.getItem("openoutpaint/checkpoint")
+		if (model != null && data.includes(model)) {
+			modelAutoComplete.value = model;
 		} else {
-			modelAutoComplete.value = data[0].title;
+			modelAutoComplete.value = data[0];
 			localStorage.setItem("openoutpaint/checkpoint", modelAutoComplete.value);
 		}
 		stableDiffusionData.checkpoint = modelAutoComplete.value;
 
 		// Initial refiner checkpoint
-		if (localStorage.getItem("openoutpaint/refiner_checkpoint") != null) {
-			refinerAutoComplete.value = localStorage.getItem("openoutpaint/refiner_checkpoint");
-			var model = data.find((option) => option.title === refinerAutoComplete.value).title;
-			if (refinerAutoComplete.value !== model) refinerAutoComplete.value = data[0].title;
+		let refiner = localStorage.getItem("openoutpaint/refiner_checkpoint")
+		if (refiner != null && data.includes(refiner)) {
+			refinerAutoComplete.value = refiner;
 		} else {
-			refinerAutoComplete.value = data[0].title;
+			refinerAutoComplete.value = data[0];
 			localStorage.setItem("openoutpaint/refiner_checkpoint", refinerAutoComplete.value);
 		}
 		stableDiffusionData.refiner_checkpoint = refinerAutoComplete.value;
