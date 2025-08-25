@@ -711,13 +711,17 @@ const upscalerAutoComplete = createAutoComplete(
 );
 
 upscalerAutoComplete.onchange.on(({value}) => {
-	localStorage.setItem("openoutpaint/upscaler", upscaler);
+	localStorage.setItem("openoutpaint/upscaler", value);
 });
 
 const hrFixUpscalerAutoComplete = createAutoComplete(
 	"HRfix Upscaler",
 	document.getElementById("hrFixUpscaler")
 );
+
+hrFixUpscalerAutoComplete.onchange.on(({value}) => {
+	localStorage.setItem("openoutpaint/hr_upscaler", value);
+});
 
 let controlNetModelAutoComplete = createAutoComplete(
 	"Inpaint Model",
@@ -1179,34 +1183,32 @@ async function getUpscalers() {
 		});
 		const data = await response.json();
 		for (var i = 0; i < data.length; i++) {
-			if (data[i].name.includes("None")) {
+			if (data[i].includes("None")) {
 				continue;
 			}
-			upscalers.push(data[i].name);
+			upscalers.push(data[i]);
 		}
 	} catch (e) {
 		console.warn("[index] Failed to fetch upscalers:");
 		console.warn(e);
 		upscalers = [
-			"Lanczos",
-			"Nearest",
-			"LDSR",
-			"SwinIR",
-			"R-ESRGAN General 4xV3",
-			"R-ESRGAN General WDN 4xV3",
-			"R-ESRGAN AnimeVideo",
-			"R-ESRGAN 4x+",
-			"R-ESRGAN 4x+ Anime6B",
-			"R-ESRGAN 2x+",
+			"Use Workflow",
 		];
 	}
+
+	// if provided list is empty, add placeholder
+	if (upscalers.length === 0) {
+	  upscalers.push("Use Workflow");
+	}
+
 	const upscalersPlusNone = [...upscalers];
 	upscalersPlusNone.unshift("None");
-	upscalersPlusNone.push("Latent");
-	upscalersPlusNone.push("Latent (antialiased)");
-	upscalersPlusNone.push("Latent (bicubic)");
-	upscalersPlusNone.push("Latent (bicubic, antialiased)");
-	upscalersPlusNone.push("Latent (nearest)");
+	// hrfix is probably meaningless in new usage context, but this mean nothing right now
+	// upscalersPlusNone.push("Latent");
+	// upscalersPlusNone.push("Latent (antialiased)");
+	// upscalersPlusNone.push("Latent (bicubic)");
+	// upscalersPlusNone.push("Latent (bicubic, antialiased)");
+	// upscalersPlusNone.push("Latent (nearest)");
 
 	upscalerAutoComplete.options = upscalers.map((u) => {
 		return {name: u, value: u};
@@ -1215,15 +1217,19 @@ async function getUpscalers() {
 		return {name: u, value: u};
 	});
 
-	upscalerAutoComplete.value =
-		localStorage.getItem("openoutpaint/upscaler") === null
-			? upscalers[0]
-			: localStorage.getItem("openoutpaint/upscaler");
+	let upscaler = localStorage.getItem("openoutpaint/upscaler")
+	if (upscaler === null ||  !upscalers.includes(upscaler)){
+		upscaler = upscalers[0];
+		localStorage.setItem("openoutpaint/upscaler", upscaler);
+	}
+	upscalerAutoComplete.value = upscaler;
 
-	hrFixUpscalerAutoComplete.value =
-		localStorage.getItem("openoutpaint/hr_upscaler") === null
-			? "None"
-			: localStorage.getItem("openoutpaint/hr_upscaler");
+	let hr_upscaler = localStorage.getItem("openoutpaint/hr_upscaler")
+	if (hr_upscaler === null){
+		hr_upscaler = "None"
+		localStorage.setItem("openoutpaint/hr_upscaler", hr_upscaler);
+	}
+	hrFixUpscalerAutoComplete.value = hr_upscaler
 }
 
 async function getModels() {
